@@ -31,7 +31,8 @@ class RedisCache:
             logger.info("Connected to Redis", redis_url=settings.redis_url)
         except Exception as e:
             logger.error("Failed to connect to Redis", error=str(e))
-            raise
+            logger.warning("Running without Redis - caching will be disabled")
+            self.redis = None
     
     async def disconnect(self) -> None:
         """Disconnect from Redis."""

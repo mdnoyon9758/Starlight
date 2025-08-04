@@ -4,6 +4,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
+from typing import Optional
 
 from app.core.config import get_settings
 from app.infrastructure.database import get_db
@@ -36,7 +38,7 @@ async def get_current_user(
     
     # Get user from database
     result = await db.execute(
-        "SELECT * FROM users WHERE username = :username",
+        text("SELECT * FROM users WHERE username = :username"),
         {"username": username}
     )
     user = result.fetchone()
@@ -54,3 +56,33 @@ async def get_current_active_user(
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+async def get_current_user_optional(
+    db: AsyncSession = Depends(get_db),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False))
+) -> Optional[User]:
+    """Get current user if authenticated, None otherwise."""
+    if not credentials:
+        return None
+    
+    try:
+        payload = jwt.decode(
+            credentials.credentials, settings.secret_key, algorithms=[settings.algorithm]
+        )
+        username: str = payload.get("sub")
+        if username is None:
+            return None
+    except JWTError:
+        return None
+    
+    # Get user from database
+    try:
+        result = await db.execute(
+            text("SELECT * FROM users WHERE username = :username"),
+            {"username": username}
+        )
+        user = result.fetchone()
+        return user
+    except Exception:
+        return None

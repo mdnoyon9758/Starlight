@@ -90,6 +90,10 @@ app.add_middleware(
 # Include routers
 app.include_router(api_router, prefix=settings.api_v1_str)
 
+# Include demo routers for a simple setup
+from app.api.v1.endpoints import demo
+app.include_router(demo.router, prefix=f"{settings.api_v1_str}/demo")
+
 
 @app.get("/")
 async def root():
@@ -110,8 +114,9 @@ async def health_check():
     # Check database connection
     try:
         from app.infrastructure.database import engine
+        from sqlalchemy import text
         async with engine.connect() as conn:
-            await conn.execute("SELECT 1")
+            await conn.execute(text("SELECT 1"))
         db_status = "healthy"
     except Exception:
         db_status = "unhealthy"

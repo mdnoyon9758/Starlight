@@ -75,40 +75,60 @@ Starlight is a comprehensive FastAPI framework designed for enterprise applicati
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.12+
-- Docker & Docker Compose
-- PostgreSQL (or use Docker)
-- Redis (or use Docker)
+### 🎯 **Choose Your Setup Style**
 
-### Installation
+<table>
+<tr>
+<td width="50%">
 
-1. **Clone the repository**
+#### 🏃‍♂️ **Simple Setup** (5 mins)
+*Perfect for trying, learning, or prototyping*
+
 ```bash
+# Clone and start immediately
 git clone https://github.com/mdnoyon9758/Starlight.git
-cd starlight
+cd Starlight
+python start_simple.py
 ```
 
-2. **Install dependencies**
-```bash
-pip install -e ".[dev]"
-```
+**What you get:**
+- ✅ FastAPI + Authentication
+- ✅ SQLite database (no setup)
+- ✅ Auto-generated docs
+- ✅ Works without Docker/Redis
 
-3. **Set up environment**
+📖 **[Simple Setup Guide →](SIMPLE_SETUP.md)**
+
+</td>
+<td width="50%">
+
+#### 🏢 **Enterprise Setup** (15 mins)
+*Full production stack with all features*
+
 ```bash
+# Full enterprise stack
+git clone https://github.com/mdnoyon9758/Starlight.git
+cd Starlight
 cp .env.example .env
-# Edit .env with your configuration
-```
-
-4. **Run with Docker Compose**
-```bash
 docker-compose up -d
 ```
 
-5. **Access the application**
-- API Documentation: http://localhost:8000/api/v1/docs
-- Flower (Celery): http://localhost:5555
-- Metrics: http://localhost:8090/metrics
+**What you get:**
+- ✅ All simple features PLUS
+- ✅ Redis caching
+- ✅ Celery background tasks
+- ✅ Prometheus metrics
+- ✅ Grafana dashboards
+
+</td>
+</tr>
+</table>
+
+### 🎯 **Access Your Application**
+- 📖 **API Docs**: http://localhost:8000/api/v1/docs
+- ❤️ **Health Check**: http://localhost:8000/health
+- 🌺 **Flower Dashboard**: http://localhost:5555 *(enterprise only)*
+- 📊 **Metrics**: http://localhost:8090/metrics *(enterprise only)*
 
 ## 📖 Documentation
 

@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
 
 from app.core.security import create_access_token, get_password_hash, verify_password
 from app.infrastructure.database import get_db
@@ -20,7 +21,7 @@ async def register(
     """Register a new user."""
     # Check if user already exists
     result = await db.execute(
-        "SELECT * FROM users WHERE username = :username OR email = :email",
+        text("SELECT * FROM users WHERE username = :username OR email = :email"),
         {"username": user_data.username, "email": user_data.email}
     )
     existing_user = result.fetchone()
@@ -54,7 +55,7 @@ async def login(
     """Authenticate user and return access token."""
     # Get user from database
     result = await db.execute(
-        "SELECT * FROM users WHERE username = :username",
+        text("SELECT * FROM users WHERE username = :username"),
         {"username": user_data.username}
     )
     user = result.fetchone()

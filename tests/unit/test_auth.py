@@ -22,6 +22,7 @@ class TestPasswordHashing:
 
 class TestAuthEndpoints:
     """Test authentication endpoints."""
+    pytestmark = pytest.mark.usefixtures("setup_database")
 
     @pytest.mark.asyncio
     async def test_register_user(self, async_client: AsyncClient):

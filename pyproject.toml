@@ -74,7 +74,7 @@ dev = [
     "isort>=5.13.2",
     "pre-commit>=4.0.1",
     "bandit>=1.8.0",
-    "safety>=3.6.0",
+    "safety>=3.2.0",
     "pip-audit>=2.6.1",
 ]
 test = [

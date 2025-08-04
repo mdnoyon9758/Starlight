@@ -55,18 +55,47 @@ python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ## 🎯 Try These Examples
 
-### **Register a User**
+### **🌟 Hello World**
+```bash
+curl http://localhost:8000/api/v1/demo/hello
+```
+
+### **📋 List Features**
+```bash
+curl http://localhost:8000/api/v1/demo/features
+```
+
+### **📊 Check Stats**
+```bash
+curl http://localhost:8000/api/v1/demo/stats
+```
+
+### **🔐 Register a User**
 ```bash
 curl -X POST "http://localhost:8000/api/v1/auth/register" \
      -H "Content-Type: application/json" \
      -d '{"username": "demo", "email": "demo@example.com", "password": "demo123"}'
 ```
 
-### **Login**
+### **🔑 Login & Get Token**
 ```bash
 curl -X POST "http://localhost:8000/api/v1/auth/login" \
      -H "Content-Type: application/json" \
      -d '{"username": "demo", "password": "demo123"}'
+```
+
+### **👤 Get Profile (with auth)**
+```bash
+# First get your token from login, then:
+curl -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+     http://localhost:8000/api/v1/demo/profile
+```
+
+### **🔄 Echo Test**
+```bash
+curl -X POST "http://localhost:8000/api/v1/demo/echo" \
+     -H "Content-Type: application/json" \
+     -d '{"message": "Hello Starlight!", "test": true}'
 ```
 
 ## 🚀 Ready to Upgrade?

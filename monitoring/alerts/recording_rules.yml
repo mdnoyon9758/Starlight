@@ -1,0 +1,117 @@
+groups:
+- name: starlight.recording_rules
+  interval: 30s
+  rules:
+  # Request rate recording rules
+  - record: starlight:request_rate_5m
+    expr: rate(starlight_requests_total[5m])
+    labels:
+      aggregation: rate_5m
+
+  - record: starlight:request_rate_1h
+    expr: rate(starlight_requests_total[1h])
+    labels:
+      aggregation: rate_1h
+
+  # Error rate recording rules
+  - record: starlight:error_rate_5m
+    expr: |
+      rate(starlight_requests_total{status_code=~"4..|5.."}[5m]) /
+      rate(starlight_requests_total[5m])
+    labels:
+      aggregation: error_rate_5m
+
+  - record: starlight:error_rate_1h
+    expr: |
+      rate(starlight_requests_total{status_code=~"4..|5.."}[1h]) /
+      rate(starlight_requests_total[1h])
+    labels:
+      aggregation: error_rate_1h
+
+  # Response time percentiles
+  - record: starlight:response_time_p50_5m
+    expr: histogram_quantile(0.50, rate(starlight_request_duration_seconds_bucket[5m]))
+    labels:
+      quantile: "0.50"
+      aggregation: 5m
+
+  - record: starlight:response_time_p95_5m
+    expr: histogram_quantile(0.95, rate(starlight_request_duration_seconds_bucket[5m]))
+    labels:
+      quantile: "0.95"
+      aggregation: 5m
+
+  - record: starlight:response_time_p99_5m
+    expr: histogram_quantile(0.99, rate(starlight_request_duration_seconds_bucket[5m]))
+    labels:
+      quantile: "0.99"
+      aggregation: 5m
+
+  # Cache hit rate
+  - record: starlight:cache_hit_rate_5m
+    expr: |
+      rate(starlight_cache_hits_total[5m]) /
+      (rate(starlight_cache_hits_total[5m]) + rate(starlight_cache_misses_total[5m]))
+    labels:
+      aggregation: hit_rate_5m
+
+  # Database connection pool utilization
+  - record: starlight:db_pool_utilization
+    expr: |
+      (starlight_db_connection_pool_size - starlight_db_connection_pool_available) /
+      starlight_db_connection_pool_size
+    labels:
+      aggregation: pool_utilization
+
+  # Celery task rates
+  - record: starlight:celery_task_rate_5m
+    expr: rate(starlight_celery_tasks_total[5m])
+    labels:
+      aggregation: task_rate_5m
+
+  - record: starlight:celery_task_failure_rate_5m
+    expr: |
+      rate(starlight_celery_tasks_total{status="failure"}[5m]) /
+      rate(starlight_celery_tasks_total[5m])
+    labels:
+      aggregation: task_failure_rate_5m
+
+  # Authentication metrics
+  - record: starlight:auth_failure_rate_5m
+    expr: |
+      rate(starlight_auth_attempts_total{result="failure"}[5m]) /
+      rate(starlight_auth_attempts_total[5m])
+    labels:
+      aggregation: auth_failure_rate_5m
+
+  # File upload metrics
+  - record: starlight:file_upload_rate_5m
+    expr: rate(starlight_file_uploads_total[5m])
+    labels:
+      aggregation: upload_rate_5m
+
+  - record: starlight:file_upload_size_avg_5m
+    expr: rate(starlight_file_upload_size_bytes_sum[5m]) / rate(starlight_file_upload_size_bytes_count[5m])
+    labels:
+      aggregation: upload_size_avg_5m
+
+- name: starlight.business_metrics
+  interval: 60s
+  rules:
+  # User activity metrics
+  - record: starlight:active_users_1h
+    expr: count(count by (user_id)(rate(starlight_requests_total{endpoint!="/health"}[1h]) > 0))
+    labels:
+      aggregation: active_users_1h
+
+  # API endpoint popularity
+  - record: starlight:top_endpoints_1h
+    expr: topk(10, sum by (endpoint)(rate(starlight_requests_total[1h])))
+    labels:
+      aggregation: top_endpoints_1h
+
+  # OAuth provider usage
+  - record: starlight:oauth_provider_usage_1h
+    expr: sum by (provider)(rate(starlight_oauth_requests_total[1h]))
+    labels:
+      aggregation: oauth_usage_1h

@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: starlight-api-service
+  namespace: starlight
+  labels:
+    app: starlight-api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 8090
+    targetPort: 8090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: starlight-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: starlight-api-metrics
+  namespace: starlight
+  labels:
+    app: starlight-api
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8090"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8090
+    targetPort: 8090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: starlight-api

@@ -1,0 +1,111 @@
+site_name: Starlight API Documentation
+site_description: Enterprise FastAPI REST API Framework
+site_author: Starlight Team
+site_url: https://starlight-api.dev
+
+repo_name: starlight/starlight
+repo_url: https://github.com/starlight/starlight
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.action.edit
+    - content.action.view
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            members_order: source
+            show_source: true
+            show_root_heading: true
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - User Guide:
+    - Authentication: user-guide/authentication.md
+    - OAuth Integration: user-guide/oauth.md
+    - File Uploads: user-guide/file-uploads.md
+    - Background Tasks: user-guide/background-tasks.md
+    - Caching: user-guide/caching.md
+    - Monitoring: user-guide/monitoring.md
+    - Security Practices: user-guide/security-practices.md
+    - Performance Optimization: user-guide/performance-optimization.md
+    - Troubleshooting: user-guide/troubleshooting.md
+  - API Reference:
+    - Endpoints: api-reference/endpoints.md
+    - Models: api-reference/models.md
+    - Schemas: api-reference/schemas.md
+  - Deployment:
+    - Docker: deployment/docker.md
+    - Production: deployment/production.md
+    - Scaling: deployment/scaling.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Testing: development/testing.md
+    - Architecture: development/architecture.md
+  - Runbooks:
+    - Service Runbooks: runbooks/service.md
+    - Incident Playbooks: runbooks/incident.md
+    - Escalation Processes: runbooks/escalation.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/starlight/starlight
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/starlight/api

@@ -1,0 +1,142 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.12]
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
+          POSTGRES_DB: starlight_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev,test]"
+
+    - name: Lint with ruff
+      run: |
+        ruff check .
+        ruff format --check .
+
+    - name: Type check with mypy
+      run: |
+        mypy app/
+
+    - name: Test with pytest
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/starlight_test
+        REDIS_URL: redis://localhost:6379/0
+        SECRET_KEY: test-secret-key-for-testing-only
+      run: |
+        pytest tests/ -v --cov=app --cov-report=xml --cov-report=html
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+    
+    - name: Security check with bandit
+      run: |
+        bandit -r app/ -f json -o bandit-report.json || true
+    
+    - name: Check for vulnerabilities with safety
+      run: |
+        safety check --json --output safety-report.json || true
+
+    - name: Audit dependencies with pip-audit
+      run: |
+        pip-audit --format=json --output=pip-audit-report.json || true
+    
+    - name: Check code formatting
+      run: |
+        black --check app/
+        isort --check-only app/
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          htmlcov/
+          bandit-report.json
+          safety-report.json
+          pip-audit-report.json
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: false
+        tags: starlight:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment"
+        # Add your deployment commands here

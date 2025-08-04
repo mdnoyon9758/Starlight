@@ -7,9 +7,9 @@
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green.svg)](https://fastapi.tiangolo.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/starlight/ci.yml?branch=main)](https://github.com/YOUR_USERNAME/starlight/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/YOUR_USERNAME/starlight)](https://codecov.io/gh/YOUR_USERNAME/starlight)
-[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/r/YOUR_USERNAME/starlight)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/mdnoyon9758/Starlight/ci.yml?branch=main)](https://github.com/mdnoyon9758/Starlight/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/mdnoyon9758/Starlight)](https://codecov.io/gh/mdnoyon9758/Starlight)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/r/mdnoyon9758/starlight)
 
 **A production-ready, enterprise-grade FastAPI framework with built-in authentication, background tasks, file storage, and comprehensive monitoring.**
 
@@ -85,7 +85,7 @@ Starlight is a comprehensive FastAPI framework designed for enterprise applicati
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/starlight.git
+git clone https://github.com/mdnoyon9758/Starlight.git
 cd starlight
 ```
 
@@ -112,10 +112,10 @@ docker-compose up -d
 
 ## 📖 Documentation
 
-- **[Full Documentation](https://YOUR_USERNAME.github.io/starlight)**
-- **[API Reference](https://YOUR_USERNAME.github.io/starlight/api-reference/)**
-- **[Getting Started Guide](https://YOUR_USERNAME.github.io/starlight/getting-started/)**
-- **[Deployment Guide](https://YOUR_USERNAME.github.io/starlight/deployment/)**
+- **[Full Documentation](https://mdnoyon9758.github.io/Starlight)**
+- **[API Reference](https://mdnoyon9758.github.io/Starlight/api-reference/)**
+- **[Getting Started Guide](https://mdnoyon9758.github.io/Starlight/getting-started/)**
+- **[Deployment Guide](https://mdnoyon9758.github.io/Starlight/deployment/)**
 
 ## 💻 Development
 
@@ -274,10 +274,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Documentation**: https://YOUR_USERNAME.github.io/starlight
-- **Docker Hub**: https://hub.docker.com/r/YOUR_USERNAME/starlight
-- **Issue Tracker**: https://github.com/YOUR_USERNAME/starlight/issues
-- **Discussions**: https://github.com/YOUR_USERNAME/starlight/discussions
+- **Documentation**: https://mdnoyon9758.github.io/Starlight
+- **Docker Hub**: https://hub.docker.com/r/mdnoyon9758/starlight
+- **Issue Tracker**: https://github.com/mdnoyon9758/Starlight/issues
+- **Discussions**: https://github.com/mdnoyon9758/Starlight/discussions
 
 ---
 
@@ -285,7 +285,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by the Starlight Team**
 
-[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/starlight?style=social)](https://github.com/YOUR_USERNAME/starlight)
-[![GitHub forks](https://img.shields.io/github/forks/YOUR_USERNAME/starlight?style=social)](https://github.com/YOUR_USERNAME/starlight)
+[![GitHub stars](https://img.shields.io/github/stars/mdnoyon9758/Starlight?style=social)](https://github.com/mdnoyon9758/Starlight)
+[![GitHub forks](https://img.shields.io/github/forks/mdnoyon9758/Starlight?style=social)](https://github.com/mdnoyon9758/Starlight)
 
 </div>

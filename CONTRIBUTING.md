@@ -16,7 +16,7 @@ Before you begin, ensure you have the following installed:
 
 1. **Fork and clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/starlight.git
+git clone https://github.com/mdnoyon9758/Starlight.git
 cd starlight
 ```
 

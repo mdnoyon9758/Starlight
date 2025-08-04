@@ -4,7 +4,7 @@ A huge thanks to all our contributors for making this project possible! 🎉
 
 ## Core Team
 
-- **[YOUR_NAME](https://github.com/YOUR_USERNAME)** - Project Creator & Maintainer
+- **[MD Noyon](https://github.com/mdnoyon9758)** - Project Creator & Maintainer
 
 ## Contributors
 
@@ -17,8 +17,8 @@ _This list is automatically generated from GitHub contributors._
 
 We welcome contributions from everyone! Here's how you can help:
 
-1. **Report Issues**: Found a bug? [Create an issue](https://github.com/YOUR_USERNAME/starlight/issues)
-2. **Suggest Features**: Have an idea? [Start a discussion](https://github.com/YOUR_USERNAME/starlight/discussions)
+1. **Report Issues**: Found a bug? [Create an issue](https://github.com/mdnoyon9758/Starlight/issues)
+2. **Suggest Features**: Have an idea? [Start a discussion](https://github.com/mdnoyon9758/Starlight/discussions)
 3. **Submit Code**: See our [Contributing Guide](CONTRIBUTING.md)
 4. **Improve Docs**: Help us make the documentation better
 5. **Spread the Word**: Star the repo and share with others!

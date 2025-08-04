@@ -79,8 +79,8 @@ Before deploying to production:
 ## Contact
 
 For security-related questions or concerns:
-- Email: security@YOUR_USERNAME.github.io (or create GitHub security advisory)
-- For general issues: [GitHub Issues](https://github.com/YOUR_USERNAME/starlight/issues)
-- Security advisories: [GitHub Security](https://github.com/YOUR_USERNAME/starlight/security)
+- Email: security@mdnoyon9758.github.io (or create GitHub security advisory)
+- For general issues: [GitHub Issues](https://github.com/mdnoyon9758/Starlight/issues)
+- Security advisories: [GitHub Security](https://github.com/mdnoyon9758/Starlight/security)
 
 Thank you for helping keep Starlight secure!

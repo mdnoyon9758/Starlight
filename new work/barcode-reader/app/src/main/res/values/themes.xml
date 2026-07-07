@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.BarcodeReader" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">#1877F2</item>
+    </style>
+</resources>

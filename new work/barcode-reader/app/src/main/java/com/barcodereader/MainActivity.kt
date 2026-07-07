@@ -1,39 +1,58 @@
 package com.barcodereader
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
-    private var scannedText by mutableStateOf("Scan a barcode or QR code")
+    private val scanResultState = mutableStateOf("Tap the button below to start scanning a barcode or QR code.")
+    private val cameraVisibleState = mutableStateOf(false)
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -41,7 +60,8 @@ class MainActivity : ComponentActivity() {
         if (granted) {
             openCamera()
         } else {
-            Toast.makeText(this, "Camera permission is required to scan barcodes", Toast.LENGTH_LONG).show()
+            scanResultState.value = "Camera permission is required to scan from the camera."
+            Toast.makeText(this, "Camera permission is required", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -57,9 +77,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BarcodeReaderApp(
-                statusText = scannedText,
+                scanResult = scanResultState.value,
+                cameraVisible = cameraVisibleState.value,
                 onScanClick = { requestCameraPermission() },
-                onGalleryClick = { openGallery() }
+                onGalleryClick = { openGallery() },
+                onReset = { cameraVisibleState.value = false; scanResultState.value = "Ready for another scan." },
+                onBarcodeDetected = { result -> scanResultState.value = result }
             )
         }
     }
@@ -72,8 +95,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openCamera() {
-        scannedText = "Camera preview is ready. Point at a barcode or QR code."
-        Toast.makeText(this, "Camera preview is ready", Toast.LENGTH_SHORT).show()
+        cameraVisibleState.value = true
+        scanResultState.value = "Camera preview is live. Point at a barcode or QR code."
     }
 
     private fun openGallery() {
@@ -86,38 +109,169 @@ class MainActivity : ComponentActivity() {
             val scanner = BarcodeScanning.getClient()
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
-                    val result = barcodes.firstOrNull()?.rawValue ?: "No barcode found in selected image"
-                    scannedText = result
+                    val result = barcodes.firstOrNull()?.rawValue ?: "No barcode found in the selected image."
+                    scanResultState.value = result
+                    cameraVisibleState.value = false
                     Toast.makeText(this, result, Toast.LENGTH_LONG).show()
                 }
                 .addOnFailureListener {
-                    scannedText = "Failed to scan selected image"
+                    scanResultState.value = "Unable to read a barcode from the selected image."
                     Toast.makeText(this, "Could not read barcode from image", Toast.LENGTH_LONG).show()
                 }
         } catch (e: Exception) {
-            scannedText = "Unable to open selected image"
+            scanResultState.value = "Unable to open the selected image."
             Toast.makeText(this, "Unable to open selected image", Toast.LENGTH_LONG).show()
         }
     }
 }
 
 @Composable
-fun BarcodeReaderApp(statusText: String, onScanClick: () -> Unit, onGalleryClick: () -> Unit) {
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+fun BarcodeReaderApp(
+    scanResult: String,
+    cameraVisible: Boolean,
+    onScanClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+    onReset: () -> Unit,
+    onBarcodeDetected: (String) -> Unit
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    Surface(modifier = Modifier.fillMaxSize(), color = colorScheme.background) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize().padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Barcode Reader", style = MaterialTheme.typography.headlineMedium)
-            Text("Scan barcodes or QR codes from the camera or a gallery photo", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 8.dp, bottom = 24.dp))
-            Button(onClick = onScanClick) {
-                Text("Open Camera")
+            Card(
+                colors = CardDefaults.cardColors(containerColor = colorScheme.primaryContainer),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Column(Modifier.padding(20.dp)) {
+                    Text("Barcode Reader", style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        "Scan product codes and QR codes from the camera or from a saved photo.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(top = 6.dp)
+                    )
+                }
             }
-            OutlinedButton(onClick = onGalleryClick, modifier = Modifier.padding(top = 12.dp)) {
-                Text("Scan from Gallery")
+
+            if (cameraVisible) {
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, colorScheme.outlineVariant)
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(320.dp)
+                                .background(Color.Black, RoundedCornerShape(20.dp))
+                        ) {
+                            CameraPreview(onBarcodeDetected = onBarcodeDetected)
+                            Box(
+                                modifier = Modifier
+                                    .size(width = 220.dp, height = 140.dp)
+                                    .align(Alignment.Center)
+                                    .border(2.dp, Color.White, RoundedCornerShape(18.dp))
+                            )
+                        }
+                        Spacer(Modifier.height(12.dp))
+                        Button(onClick = onReset, modifier = Modifier.fillMaxWidth()) {
+                            Text("Stop Camera")
+                        }
+                    }
+                }
+            } else {
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, colorScheme.outlineVariant)
+                ) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Button(onClick = onScanClick, modifier = Modifier.fillMaxWidth()) {
+                            Text("Open Camera")
+                        }
+                        OutlinedButton(onClick = onGalleryClick, modifier = Modifier.fillMaxWidth()) {
+                            Text("Scan from Gallery")
+                        }
+                    }
+                }
             }
-            Text(statusText, modifier = Modifier.padding(top = 24.dp), style = MaterialTheme.typography.bodyMedium)
+
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, colorScheme.outlineVariant)
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Latest result", style = MaterialTheme.typography.titleMedium)
+                    Text(scanResult, style = MaterialTheme.typography.bodyMedium)
+                }
+            }
         }
+    }
+}
+
+@Composable
+fun CameraPreview(onBarcodeDetected: (String) -> Unit) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val previewView = remember { PreviewView(context) }
+    val executor = remember { Executors.newSingleThreadExecutor() }
+
+    DisposableEffect(lifecycleOwner) {
+        onDispose { executor.shutdown() }
+    }
+
+    AndroidView(
+        factory = { previewView },
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(previewView.surfaceProvider)
+            }
+            val analysis = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also {
+                    it.setAnalyzer(executor, BarcodeAnalyzer(onBarcodeDetected))
+                }
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, analysis)
+        }, ContextCompat.getMainExecutor(context))
+    }
+}
+
+private class BarcodeAnalyzer(
+    private val onBarcodeDetected: (String) -> Unit
+) : ImageAnalysis.Analyzer {
+    private var lastScanAt = 0L
+
+    override fun analyze(imageProxy: ImageProxy) {
+        val now = System.currentTimeMillis()
+        if (now - lastScanAt < 1800) {
+            imageProxy.close()
+            return
+        }
+
+        val mediaImage = imageProxy.image ?: run {
+            imageProxy.close()
+            return
+        }
+
+        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+        val scanner = BarcodeScanning.getClient()
+        scanner.process(inputImage)
+            .addOnSuccessListener { barcodes ->
+                val value = barcodes.firstOrNull()?.rawValue
+                if (!value.isNullOrBlank()) {
+                    lastScanAt = now
+                    onBarcodeDetected(value)
+                }
+            }
+            .addOnCompleteListener { imageProxy.close() }
     }
 }

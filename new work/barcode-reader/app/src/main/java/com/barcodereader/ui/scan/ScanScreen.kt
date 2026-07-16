@@ -4,16 +4,9 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,24 +41,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.barcodereader.R
-import com.barcodereader.data.HistoryStorage
-import com.barcodereader.data.ScanHistory
-import com.barcodereader.service.ProductInfo
-import com.barcodereader.service.ProductLookupService
 import com.barcodereader.ui.components.ScanResultDisplay
-import com.barcodereader.ui.theme.Primary
 import com.barcodereader.util.FormatUtils
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 
 private fun getFormatName(content: String): String {
@@ -82,39 +70,28 @@ private fun getFormatName(content: String): String {
 
 @Composable
 fun ScanScreen(
-    onGalleryClick: () -> Unit,
-    onPermissionRequest: () -> Unit
+    viewModel: ScanViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val storage = remember { HistoryStorage(context) }
-    val productLookupService = remember { ProductLookupService(context) }
+    val scanResult by viewModel.scanResult.collectAsState()
+    val productInfo by viewModel.productInfo.collectAsState()
+    val isProcessing by viewModel.isProcessing.collectAsState()
 
     var hasPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
         )
     }
-    var isProcessing by remember { mutableStateOf(false) }
-    var lastResult by remember { mutableStateOf<String?>(null) }
-    var lastResultType by remember { mutableStateOf<String?>(null) }
     var showResult by remember { mutableStateOf(false) }
-    var productInfo by remember { mutableStateOf<ProductInfo?>(null) }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success && photoUri != null) {
-            isProcessing = true
             scanImageFromUri(context, photoUri!!) { result, type ->
-                lastResult = result
-                lastResultType = type
+                viewModel.processScan(result, type)
                 showResult = true
-                isProcessing = false
-                saveToHistory(storage, result, type)
-                lookupProduct(productLookupService, result) { info ->
-                    productInfo = info
-                }
             }
         }
     }
@@ -123,16 +100,9 @@ fun ScanScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
-            isProcessing = true
             scanImageFromUri(context, uri) { result, type ->
-                lastResult = result
-                lastResultType = type
+                viewModel.processScan(result, type)
                 showResult = true
-                isProcessing = false
-                saveToHistory(storage, result, type)
-                lookupProduct(productLookupService, result) { info ->
-                    productInfo = info
-                }
             }
         }
     }
@@ -160,7 +130,7 @@ fun ScanScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    "Scan Barcode",
+                    stringResource(R.string.scan_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -177,11 +147,11 @@ fun ScanScreen(
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(64.dp),
-                            color = Primary,
+                            color = MaterialTheme.colorScheme.primary,
                             strokeWidth = 4.dp
                         )
                         Text(
-                            "Scanning barcode...",
+                            stringResource(R.string.scan_processing),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
@@ -196,13 +166,13 @@ fun ScanScreen(
                             modifier = Modifier
                                 .size(120.dp)
                                 .clip(CircleShape)
-                                .background(Primary.copy(alpha = 0.1f)),
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 Icons.Filled.CameraAlt,
                                 contentDescription = null,
-                                tint = Primary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(64.dp)
                             )
                         }
@@ -212,12 +182,12 @@ fun ScanScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                "Capture to Scan",
+                                stringResource(R.string.scan_capture),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                "Take a photo or choose from gallery\nto scan barcodes and QR codes",
+                                stringResource(R.string.scan_instructions),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textAlign = TextAlign.Center
@@ -241,7 +211,6 @@ fun ScanScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(56.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Primary),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Icon(
@@ -250,7 +219,7 @@ fun ScanScreen(
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
-                                Text("Take Photo", style = MaterialTheme.typography.titleMedium)
+                                Text(stringResource(R.string.scan_take_photo), style = MaterialTheme.typography.titleMedium)
                             }
 
                             OutlinedButton(
@@ -266,7 +235,7 @@ fun ScanScreen(
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
-                                Text("Load from Gallery", style = MaterialTheme.typography.titleMedium)
+                                Text(stringResource(R.string.scan_load_gallery), style = MaterialTheme.typography.titleMedium)
                             }
                         }
                     }
@@ -302,22 +271,21 @@ fun ScanScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Only show result if we have one
-                    val currentResult = lastResult
-                    val currentType = lastResultType
+                    val currentResult = scanResult
                     if (currentResult != null) {
                         ScanResultDisplay(
-                            result = currentResult,
-                            type = currentType ?: "TEXT",
+                            result = currentResult.content,
+                            type = currentResult.type,
                             productInfo = productInfo,
                             onCopy = {
-                                FormatUtils.copyToClipboard(context, currentResult)
+                                FormatUtils.copyToClipboard(context, currentResult.content)
                             },
                             onShare = {
-                                FormatUtils.shareText(context, currentResult)
+                                FormatUtils.shareText(context, currentResult.content)
                             },
                             onDismiss = {
                                 showResult = false
+                                viewModel.clearResult()
                             }
                         )
                     }
@@ -326,21 +294,16 @@ fun ScanScreen(
 
                     Button(
                         onClick = {
-                            // First hide the sheet
                             showResult = false
-                            // Then clear the data after a short delay
-                            lastResult = null
-                            lastResultType = null
-                            productInfo = null
+                            viewModel.clearResult()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                             .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Done", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.scan_done), style = MaterialTheme.typography.titleMedium)
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -377,41 +340,13 @@ private fun scanImageFromUri(
                     val type = getFormatName(value)
                     onResult(value, type)
                 } else {
-                    onResult("No barcode found in the image", "TEXT")
+                    onResult(context.getString(R.string.scan_no_barcode), "TEXT")
                 }
             }
             .addOnFailureListener {
-                onResult("Failed to scan barcode", "TEXT")
+                onResult(context.getString(R.string.scan_failed), "TEXT")
             }
     } catch (e: Exception) {
-        onResult("Error loading image", "TEXT")
-    }
-}
-
-private fun saveToHistory(storage: HistoryStorage, content: String, type: String) {
-    val entry = ScanHistory(
-        id = System.currentTimeMillis(),
-        content = content,
-        type = type,
-        format = getFormatName(content),
-        timestamp = System.currentTimeMillis()
-    )
-    storage.addEntry(entry)
-}
-
-private fun lookupProduct(
-    service: ProductLookupService,
-    barcode: String,
-    onResult: (ProductInfo?) -> Unit
-) {
-    if (service.isProductBarcode(barcode)) {
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val info = service.lookupProduct(barcode)
-                onResult(info)
-            } catch (e: Exception) {
-                onResult(null)
-            }
-        }
+        onResult(context.getString(R.string.scan_error), "TEXT")
     }
 }

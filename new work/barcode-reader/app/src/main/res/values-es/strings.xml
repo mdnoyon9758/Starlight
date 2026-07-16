@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Escáner de Códigos</string>
+
+    <!-- Navigation -->
+    <string name="nav_scan">Escanear</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_generate">Generar</string>
+    <string name="nav_settings">Configuración</string>
+
+    <!-- Scan Screen -->
+    <string name="scan_title">Escanear Código</string>
+    <string name="scan_capture">Capturar para Escanear</string>
+    <string name="scan_instructions">Toma una foto o elige de la galería\npara escanear códigos de barras y QR</string>
+    <string name="scan_take_photo">Tomar Foto</string>
+    <string name="scan_load_gallery">Cargar de Galería</string>
+    <string name="scan_processing">Escaneando código…</string>
+    <string name="scan_no_barcode">No se encontró código en la imagen</string>
+    <string name="scan_failed">Error al escanear código</string>
+    <string name="scan_error">Error al cargar imagen</string>
+    <string name="scan_done">Listo</string>
+
+    <!-- History Screen -->
+    <string name="history_title">Historial de Escaneos</string>
+    <string name="history_empty_title">Sin Escaneos Aún</string>
+    <string name="history_empty_subtitle">Tu historial de escaneos aparecerá aquí</string>
+    <string name="history_start_scanning">Comenzar a Escanear</string>
+    <string name="history_delete">Eliminar</string>
+    <string name="history_delete_confirm">¿Estás seguro de que quieres eliminar este escaneo?</string>
+    <string name="history_cancel">Cancelar</string>
+
+    <!-- Generate Screen -->
+    <string name="generate_title">Generar Código</string>
+    <string name="generate_type">Tipo de Código</string>
+    <string name="generate_input">Ingrese contenido</string>
+    <string name="generate_placeholder">Texto, URL o datos…</string>
+    <string name="generate_button">Generar</string>
+    <string name="generate_share">Compartir</string>
+    <string name="generate_save">Guardar en Galería</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Configuración</string>
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Predeterminado del Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_theme_amoled">AMOLED</string>
+    <string name="settings_dynamic_colors">Colores Dinámicos</string>
+    <string name="settings_scanner">Escáner</string>
+    <string name="settings_scan_sound">Sonido de Escaneo</string>
+    <string name="settings_haptic_feedback">Retroalimentación Háptica</string>
+    <string name="settings_auto_focus">Enfoque Automático</string>
+    <string name="settings_security">Seguridad</string>
+    <string name="settings_app_lock">Bloqueo de App</string>
+    <string name="settings_lock_type">Tipo de Bloqueo</string>
+    <string name="settings_lock_none">Ninguno</string>
+    <string name="settings_lock_pin">PIN</string>
+    <string name="settings_lock_password">Contraseña</string>
+    <string name="settings_lock_biometric">Biométrico</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_backup">Copia de Seguridad</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_version">Versión</string>
+    <string name="settings_rate_app">Calificar App</string>
+    <string name="settings_share_app">Compartir App</string>
+    <string name="settings_contact">Contactar Soporte</string>
+    <string name="settings_privacy_policy">Política de Privacidad</string>
+    <string name="settings_terms">Términos de Servicio</string>
+    <string name="settings_licenses">Licencias de Código Abierto</string>
+
+    <!-- Common -->
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="delete">Eliminar</string>
+    <string name="copied">Copiado al portapapeles</string>
+    <string name="error">Error</string>
+    <string name="loading">Cargando…</string>
+    <string name="no_results">No se encontraron resultados</string>
+</resources>

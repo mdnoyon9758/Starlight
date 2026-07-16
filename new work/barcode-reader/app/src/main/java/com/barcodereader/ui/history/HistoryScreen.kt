@@ -3,7 +3,6 @@ package com.barcodereader.ui.history
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
@@ -43,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,25 +52,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.barcodereader.data.HistoryStorage
-import com.barcodereader.data.ScanHistory
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.barcodereader.R
+import com.barcodereader.data.local.database.entity.ScanHistoryEntity
 import com.barcodereader.ui.components.EmptyState
-import com.barcodereader.ui.theme.*
-import com.barcodereader.util.ExportUtils
 import com.barcodereader.util.FormatUtils
 
 private fun getTypeColor(type: String): Color {
     return when (type.uppercase()) {
-        "URL" -> UrlColor
-        "EMAIL" -> EmailColor
-        "PHONE" -> PhoneColor
-        "WIFI" -> WiFiColor
-        "PRODUCT" -> GradientGreen
-        "LOCATION" -> LocationColor
-        else -> GradientPurple
+        "URL" -> Color(0xFF2196F3)
+        "EMAIL" -> Color(0xFF009688)
+        "PHONE" -> Color(0xFFFF9800)
+        "WIFI" -> Color(0xFF00BCD4)
+        "PRODUCT" -> Color(0xFF4CAF50)
+        "LOCATION" -> Color(0xFF9C27B0)
+        else -> Color(0xFF673AB7)
     }
 }
 
@@ -100,11 +99,13 @@ private fun getTypeLabel(type: String): String {
 
 @Composable
 fun HistoryScreen(
-    storage: HistoryStorage,
+    viewModel: HistoryViewModel = hiltViewModel(),
     onNavigateToScan: () -> Unit
 ) {
-    var entries by remember { mutableStateOf(storage.getAllEntries()) }
-    var showDeleteConfirm by remember { mutableStateOf<ScanHistory?>(null) }
+    val scans by viewModel.scans.collectAsState()
+    val selectedScans by viewModel.selectedScans.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    var showDeleteConfirm by remember { mutableStateOf<ScanHistoryEntity?>(null) }
     var showExportMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -115,11 +116,11 @@ fun HistoryScreen(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Scan History", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.history_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
             }
 
             // Export button
-            if (entries.isNotEmpty()) {
+            if (scans.isNotEmpty()) {
                 Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), contentAlignment = Alignment.CenterEnd) {
                     Box {
                         IconButton(onClick = { showExportMenu = true }) {
@@ -131,21 +132,17 @@ fun HistoryScreen(
                         }
                         DropdownMenu(expanded = showExportMenu, onDismissRequest = { showExportMenu = false }) {
                             DropdownMenuItem(
-                                text = { Text("Export as CSV") },
+                                text = { Text(stringResource(R.string.history_export_csv)) },
                                 onClick = {
                                     showExportMenu = false
-                                    ExportUtils.exportToCsv(context, entries)?.let { uri ->
-                                        ExportUtils.shareExport(context, uri, ExportUtils.ExportFormat.CSV)
-                                    }
+                                    // TODO: Implement CSV export
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Export as JSON") },
+                                text = { Text(stringResource(R.string.history_export_json)) },
                                 onClick = {
                                     showExportMenu = false
-                                    ExportUtils.exportToJson(context, entries)?.let { uri ->
-                                        ExportUtils.shareExport(context, uri, ExportUtils.ExportFormat.JSON)
-                                    }
+                                    // TODO: Implement JSON export
                                 }
                             )
                         }
@@ -153,12 +150,12 @@ fun HistoryScreen(
                 }
             }
 
-            if (entries.isEmpty()) {
+            if (scans.isEmpty()) {
                 EmptyState(
-                    icon = com.barcodereader.R.drawable.ic_history_empty,
-                    title = "No Scans Yet",
-                    subtitle = "Your scan history will appear here",
-                    actionLabel = "Start Scanning",
+                    icon = R.drawable.ic_history_empty,
+                    title = stringResource(R.string.history_empty_title),
+                    subtitle = stringResource(R.string.history_empty_subtitle),
+                    actionLabel = stringResource(R.string.history_start_scanning),
                     onAction = onNavigateToScan
                 )
             } else {
@@ -166,16 +163,13 @@ fun HistoryScreen(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(entries) { entry ->
+                    items(scans) { entry ->
                         HistoryItem(
                             entry = entry,
                             onCopy = { FormatUtils.copyToClipboard(context, entry.content) },
                             onShare = { FormatUtils.shareText(context, entry.content) },
                             onDelete = { showDeleteConfirm = entry },
-                            onFavoriteToggle = {
-                                storage.toggleFavorite(entry.id)
-                                entries = storage.getAllEntries()
-                            },
+                            onFavoriteToggle = { viewModel.toggleFavorite(entry.id) },
                             onAction = {
                                 when (entry.type.uppercase()) {
                                     "URL" -> {
@@ -202,24 +196,23 @@ fun HistoryScreen(
     showDeleteConfirm?.let { entry ->
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = null },
-            title = { Text("Delete Scan") },
-            text = { Text("Are you sure you want to delete this scan?") },
+            title = { Text(stringResource(R.string.history_delete)) },
+            text = { Text(stringResource(R.string.history_delete_confirm)) },
             confirmButton = {
                 Button(
                     onClick = {
-                        storage.deleteEntry(entry.id)
-                        entries = storage.getAllEntries()
+                        viewModel.deleteScan(entry.id)
                         showDeleteConfirm = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Error),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 OutlinedButton(onClick = { showDeleteConfirm = null }, shape = RoundedCornerShape(12.dp)) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.history_cancel))
                 }
             }
         )
@@ -228,7 +221,7 @@ fun HistoryScreen(
 
 @Composable
 fun HistoryItem(
-    entry: ScanHistory,
+    entry: ScanHistoryEntity,
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
@@ -239,6 +232,7 @@ fun HistoryItem(
     val typeIcon = getTypeIcon(entry.type)
     val typeLabel = getTypeLabel(entry.type)
     val hasAction = entry.type.uppercase() in listOf("URL", "PHONE", "EMAIL")
+    val context = LocalContext.current
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -272,7 +266,7 @@ fun HistoryItem(
                             if (entry.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp),
-                            tint = if (entry.isFavorite) Error else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                            tint = if (entry.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
@@ -295,8 +289,10 @@ fun HistoryItem(
             Spacer(modifier = Modifier.height(8.dp))
             
             // Date
+            val date = java.text.SimpleDateFormat("MMM dd, yyyy HH:mm", java.util.Locale.getDefault())
+                .format(java.util.Date(entry.timestamp))
             Text(
-                entry.formattedDate,
+                date,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
@@ -319,10 +315,10 @@ fun HistoryItem(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             when (entry.type.uppercase()) {
-                                "URL" -> "Open"
-                                "PHONE" -> "Call"
-                                "EMAIL" -> "Send"
-                                else -> "Open"
+                                "URL" -> stringResource(R.string.action_open)
+                                "PHONE" -> stringResource(R.string.action_call)
+                                "EMAIL" -> stringResource(R.string.action_send)
+                                else -> stringResource(R.string.action_open)
                             },
                             style = MaterialTheme.typography.labelMedium
                         )

@@ -1,8 +1,6 @@
 package com.barcodereader.ui.generate
 
 import android.content.ContentValues
-import android.graphics.Bitmap
-import android.graphics.Color as AndroidColor
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -24,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,8 +38,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,114 +50,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.barcodereader.ui.theme.*
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.EncodeHintType
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
-import com.google.zxing.qrcode.QRCodeWriter
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-import java.io.File
-import java.io.FileOutputStream
-import java.util.EnumMap
-
-enum class GenerateType(val label: String, val format: BarcodeFormat) {
-    QR_CODE("QR Code", BarcodeFormat.QR_CODE),
-    CODE_128("Code 128", BarcodeFormat.CODE_128),
-    EAN_13("EAN-13", BarcodeFormat.EAN_13),
-    DATA_MATRIX("Data Matrix", BarcodeFormat.DATA_MATRIX),
-    PDF_417("PDF417", BarcodeFormat.PDF_417),
-    CODE_39("Code 39", BarcodeFormat.CODE_39),
-    ITF("ITF", BarcodeFormat.ITF),
-    UPC_A("UPC-A", BarcodeFormat.UPC_A)
-}
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.barcodereader.R
+import com.barcodereader.util.FormatUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GenerateScreen() {
+fun GenerateScreen(
+    viewModel: GenerateViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
-
-    var selectedType by remember { mutableStateOf(GenerateType.QR_CODE) }
-    var inputText by remember { mutableStateOf("") }
-    var generatedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    val selectedType by viewModel.selectedType.collectAsState()
+    val inputText by viewModel.inputText.collectAsState()
+    val generatedBitmap by viewModel.generatedBitmap.collectAsState()
     var showDropdown by remember { mutableStateOf(false) }
-
-    fun generateBarcode(content: String, type: GenerateType): Bitmap? {
-        return try {
-            val writer = when (type) {
-                GenerateType.QR_CODE -> QRCodeWriter()
-                else -> MultiFormatWriter()
-            }
-            val hints = EnumMap<EncodeHintType, Any>(EncodeHintType::class.java)
-            hints[EncodeHintType.MARGIN] = 2
-            hints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.M
-
-            val bitMatrix: BitMatrix = writer.encode(content, type.format, 800, 800, hints)
-            val width = bitMatrix.width
-            val height = bitMatrix.height
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-            for (x in 0 until width) {
-                for (y in 0 until height) {
-                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) AndroidColor.BLACK else AndroidColor.WHITE)
-                }
-            }
-            bitmap
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    fun shareBitmap(bitmap: Bitmap) {
-        try {
-            val cacheDir = File(context.cacheDir, "shared_images")
-            cacheDir.mkdirs()
-            val file = File(cacheDir, "barcode_${System.currentTimeMillis()}.png")
-            val stream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-            stream.flush()
-            stream.close()
-
-            val uri = androidx.core.content.FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                file
-            )
-            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-                type = "image/*"
-                putExtra(android.content.Intent.EXTRA_STREAM, uri)
-                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            context.startActivity(android.content.Intent.createChooser(intent, "Share Barcode"))
-        } catch (e: Exception) {
-            Toast.makeText(context, "Failed to share: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    fun saveToGallery(bitmap: Bitmap) {
-        try {
-            val filename = "barcode_${System.currentTimeMillis()}.png"
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Barcodes")
-                }
-            }
-            val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            uri?.let {
-                context.contentResolver.openOutputStream(it)?.use { stream ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                }
-                Toast.makeText(context, "Saved to gallery", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            Toast.makeText(context, "Failed to save: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -177,7 +83,7 @@ fun GenerateScreen() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                "Generate Code",
+                stringResource(R.string.generate_title),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -193,7 +99,7 @@ fun GenerateScreen() {
                 value = selectedType.label,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Code Type") },
+                label = { Text(stringResource(R.string.generate_type)) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = showDropdown)
                 },
@@ -201,7 +107,7 @@ fun GenerateScreen() {
                     .fillMaxWidth()
                     .menuAnchor(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Primary,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 ),
                 shape = RoundedCornerShape(12.dp)
@@ -215,9 +121,8 @@ fun GenerateScreen() {
                     DropdownMenuItem(
                         text = { Text(type.label) },
                         onClick = {
-                            selectedType = type
+                            viewModel.setSelectedType(type)
                             showDropdown = false
-                            generatedBitmap = null
                         }
                     )
                 }
@@ -227,17 +132,14 @@ fun GenerateScreen() {
         // Input field
         OutlinedTextField(
             value = inputText,
-            onValueChange = {
-                inputText = it
-                generatedBitmap = null
-            },
+            onValueChange = { viewModel.setInputText(it) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Enter content") },
-            placeholder = { Text("Text, URL, or data...") },
+            label = { Text(stringResource(R.string.generate_input)) },
+            placeholder = { Text(stringResource(R.string.generate_placeholder)) },
             minLines = 2,
             maxLines = 4,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Primary,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline
             ),
             shape = RoundedCornerShape(12.dp)
@@ -245,19 +147,14 @@ fun GenerateScreen() {
 
         // Generate button
         Button(
-            onClick = {
-                if (inputText.isNotBlank()) {
-                    generatedBitmap = generateBarcode(inputText, selectedType)
-                }
-            },
+            onClick = { viewModel.generate() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Primary),
             shape = RoundedCornerShape(16.dp),
             enabled = inputText.isNotBlank()
         ) {
-            Text("Generate", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.generate_button), style = MaterialTheme.typography.titleMedium)
         }
 
         // Preview
@@ -292,11 +189,14 @@ fun GenerateScreen() {
             ) {
                 // Share button
                 Button(
-                    onClick = { generatedBitmap?.let { shareBitmap(it) } },
+                    onClick = {
+                        generatedBitmap?.let { bitmap ->
+                            FormatUtils.shareImage(context, bitmap)
+                        }
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GradientBlue),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Icon(
@@ -305,20 +205,46 @@ fun GenerateScreen() {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Share")
+                    Text(stringResource(R.string.generate_share))
                 }
 
                 // Save to gallery button
                 OutlinedButton(
-                    onClick = { generatedBitmap?.let { saveToGallery(it) } },
+                    onClick = {
+                        generatedBitmap?.let { bitmap ->
+                            saveToGallery(context, bitmap)
+                        }
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .height(56.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Save to Gallery")
+                    Text(stringResource(R.string.generate_save))
                 }
             }
         }
+    }
+}
+
+private fun saveToGallery(context: android.content.Context, bitmap: android.graphics.Bitmap) {
+    try {
+        val filename = "barcode_${System.currentTimeMillis()}.png"
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Barcodes")
+            }
+        }
+        val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        uri?.let {
+            context.contentResolver.openOutputStream(it)?.use { stream ->
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+            }
+            Toast.makeText(context, context.getString(R.string.generate_save), Toast.LENGTH_SHORT).show()
+        }
+    } catch (e: Exception) {
+        Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_SHORT).show()
     }
 }

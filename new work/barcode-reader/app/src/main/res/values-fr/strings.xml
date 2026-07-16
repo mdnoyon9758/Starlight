@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Scanner de Codes</string>
+
+    <!-- Navigation -->
+    <string name="nav_scan">Scanner</string>
+    <string name="nav_history">Historique</string>
+    <string name="nav_generate">Générer</string>
+    <string name="nav_settings">Paramètres</string>
+
+    <!-- Scan Screen -->
+    <string name="scan_title">Scanner un Code</string>
+    <string name="scan_capture">Capturer pour Scanner</string>
+    <string name="scan_instructions">Prenez une photo ou choisissez dans la galerie\npour scanner des codes-barres et QR codes</string>
+    <string name="scan_take_photo">Prendre une Photo</string>
+    <string name="scan_load_gallery">Charger depuis la Galerie</string>
+    <string name="scan_processing">Scan du code…</string>
+    <string name="scan_no_barcode">Aucun code trouvé dans l\'image</string>
+    <string name="scan_failed">Échec du scan du code</string>
+    <string name="scan_error">Erreur de chargement de l\'image</string>
+    <string name="scan_done">Terminé</string>
+
+    <!-- History Screen -->
+    <string name="history_title">Historique des Scans</string>
+    <string name="history_empty_title">Pas encore de Scans</string>
+    <string name="history_empty_subtitle">Votre historique de scans apparaîtra ici</string>
+    <string name="history_start_scanning">Commencer à Scanner</string>
+    <string name="history_delete">Supprimer</string>
+    <string name="history_delete_confirm">Êtes-vous sûr de vouloir supprimer ce scan ?</string>
+    <string name="history_cancel">Annuler</string>
+
+    <!-- Generate Screen -->
+    <string name="generate_title">Générer un Code</string>
+    <string name="generate_type">Type de Code</string>
+    <string name="generate_input">Entrez le contenu</string>
+    <string name="generate_placeholder">Texte, URL ou données…</string>
+    <string name="generate_button">Générer</string>
+    <string name="generate_share">Partager</string>
+    <string name="generate_save">Enregistrer dans la Galerie</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_theme_system">Par Défaut du Système</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_theme_amoled">AMOLED</string>
+    <string name="settings_dynamic_colors">Couleurs Dynamiques</string>
+    <string name="settings_scanner">Scanner</string>
+    <string name="settings_scan_sound">Son de Scan</string>
+    <string name="settings_haptic_feedback">Retour Haptique</string>
+    <string name="settings_auto_focus">Mise au Point Auto</string>
+    <string name="settings_security">Sécurité</string>
+    <string name="settings_app_lock">Verrouillage d\'App</string>
+    <string name="settings_lock_type">Type de Verrouillage</string>
+    <string name="settings_lock_none">Aucun</string>
+    <string name="settings_lock_pin">PIN</string>
+    <string name="settings_lock_password">Mot de Passe</string>
+    <string name="settings_lock_biometric">Biométrique</string>
+    <string name="settings_language">Langue</string>
+    <string name="settings_backup">Sauvegarde &amp; Restauration</string>
+    <string name="settings_about">À propos</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_rate_app">Noter l\'App</string>
+    <string name="settings_share_app">Partager l\'App</string>
+    <string name="settings_contact">Contacter le Support</string>
+    <string name="settings_privacy_policy">Politique de Confidentialité</string>
+    <string name="settings_terms">Conditions d\'Utilisation</string>
+    <string name="settings_licenses">Licences Open Source</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Annuler</string>
+    <string name="save">Enregistrer</string>
+    <string name="delete">Supprimer</string>
+    <string name="copied">Copié dans le presse-papiers</string>
+    <string name="error">Erreur</string>
+    <string name="loading">Chargement…</string>
+    <string name="no_results">Aucun résultat trouvé</string>
+</resources>

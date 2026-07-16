@@ -19,13 +19,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.barcodereader.data.HistoryStorage
 import com.barcodereader.ui.generate.GenerateScreen
 import com.barcodereader.ui.history.HistoryScreen
 import com.barcodereader.ui.scan.ScanScreen
 
 @Composable
-fun AppNavigation(historyStorage: HistoryStorage) {
+fun AppNavigation() {
     val navController = rememberNavController()
     var selectedTab by remember { mutableStateOf(TabItem.Scan.route) }
     val isDarkTheme = isSystemInDarkTheme()
@@ -89,15 +88,11 @@ fun AppNavigation(historyStorage: HistoryStorage) {
                 }
             ) {
                 composable(TabItem.Scan.route) {
-                    ScanScreen(
-                        onGalleryClick = { /* Handled internally */ },
-                        onPermissionRequest = { /* Handled internally */ }
-                    )
+                    ScanScreen()
                 }
                 
                 composable(TabItem.History.route) {
                     HistoryScreen(
-                        storage = historyStorage,
                         onNavigateToScan = {
                             selectedTab = TabItem.Scan.route
                             navController.navigate(TabItem.Scan.route) {

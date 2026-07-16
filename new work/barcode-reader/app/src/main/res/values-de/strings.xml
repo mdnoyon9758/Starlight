@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Barcode-Scanner</string>
+
+    <!-- Navigation -->
+    <string name="nav_scan">Scannen</string>
+    <string name="nav_history">Verlauf</string>
+    <string name="nav_generate">Generieren</string>
+    <string name="nav_settings">Einstellungen</string>
+
+    <!-- Scan Screen -->
+    <string name="scan_title">Barcode scannen</string>
+    <string name="scan_capture">Erfassen zum Scannen</string>
+    <string name="scan_instructions">Machen Sie ein Foto oder wählen Sie aus der Galerie\num Barcodes und QR-Codes zu scannen</string>
+    <string name="scan_take_photo">Foto machen</string>
+    <string name="scan_load_gallery">Aus Galerie laden</string>
+    <string name="scan_processing">Barcode wird gescannt…</string>
+    <string name="scan_no_barcode">Kein Barcode im Bild gefunden</string>
+    <string name="scan_failed">Barcode-Scan fehlgeschlagen</string>
+    <string name="scan_error">Fehler beim Laden des Bildes</string>
+    <string name="scan_done">Fertig</string>
+
+    <!-- History Screen -->
+    <string name="history_title">Scan-Verlauf</string>
+    <string name="history_empty_title">Noch keine Scans</string>
+    <string name="history_empty_subtitle">Ihr Scan-Verlauf wird hier angezeigt</string>
+    <string name="history_start_scanning">Jetzt scannen</string>
+    <string name="history_delete">Löschen</string>
+    <string name="history_delete_confirm">Möchten Sie diesen Scan wirklich löschen?</string>
+    <string name="history_cancel">Abbrechen</string>
+
+    <!-- Generate Screen -->
+    <string name="generate_title">Code generieren</string>
+    <string name="generate_type">Code-Typ</string>
+    <string name="generate_input">Inhalt eingeben</string>
+    <string name="generate_placeholder">Text, URL oder Daten…</string>
+    <string name="generate_button">Generieren</string>
+    <string name="generate_share">Teilen</string>
+    <string name="generate_save">In Galerie speichern</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_appearance">Darstellung</string>
+    <string name="settings_theme">Design</string>
+    <string name="settings_theme_system">Systemstandard</string>
+    <string name="settings_theme_light">Hell</string>
+    <string name="settings_theme_dark">Dunkel</string>
+    <string name="settings_theme_amoled">AMOLED</string>
+    <string name="settings_dynamic_colors">Dynamische Farben</string>
+    <string name="settings_scanner">Scanner</string>
+    <string name="settings_scan_sound">Scan-Ton</string>
+    <string name="settings_haptic_feedback">Haptisches Feedback</string>
+    <string name="settings_auto_focus">Autofokus</string>
+    <string name="settings_security">Sicherheit</string>
+    <string name="settings_app_lock">App-Sperre</string>
+    <string name="settings_lock_type">Sperrtyp</string>
+    <string name="settings_lock_none">Keine</string>
+    <string name="settings_lock_pin">PIN</string>
+    <string name="settings_lock_password">Passwort</string>
+    <string name="settings_lock_biometric">Biometrisch</string>
+    <string name="settings_language">Sprache</string>
+    <string name="settings_backup">Sicherung &amp; Wiederherstellung</string>
+    <string name="settings_about">Über</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_rate_app">App bewerten</string>
+    <string name="settings_share_app">App teilen</string>
+    <string name="settings_contact">Support kontaktieren</string>
+    <string name="settings_privacy_policy">Datenschutzrichtlinie</string>
+    <string name="settings_terms">Nutzungsbedingungen</string>
+    <string name="settings_licenses">Open-Source-Lizenzen</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="save">Speichern</string>
+    <string name="delete">Löschen</string>
+    <string name="copied">In die Zwischenablage kopiert</string>
+    <string name="error">Fehler</string>
+    <string name="loading">Laden…</string>
+    <string name="no_results">Keine Ergebnisse gefunden</string>
+</resources>

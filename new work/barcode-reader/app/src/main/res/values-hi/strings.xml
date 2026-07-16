@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">बारकोड स्कैनर</string>
+
+    <!-- Navigation -->
+    <string name="nav_scan">स्कैन</string>
+    <string name="nav_history">इतिहास</string>
+    <string name="nav_generate">जनरेट</string>
+    <string name="nav_settings">सेटिंग्स</string>
+
+    <!-- Scan Screen -->
+    <string name="scan_title">बारकोड स्कैन करें</string>
+    <string name="scan_capture">स्कैन के लिए कैप्चर करें</string>
+    <string name="scan_instructions">बारकोड और QR कोड स्कैन करने के लिए\nफ़ोटो लें या गैलरी से चुनें</string>
+    <string name="scan_take_photo">फ़ोटो लें</string>
+    <string name="scan_load_gallery">गैलरी से लोड करें</string>
+    <string name="scan_processing">बारकोड स्कैन हो रहा है…</string>
+    <string name="scan_no_barcode">छवि में कोई बारकोड नहीं मिला</string>
+    <string name="scan_failed">बारकोड स्कैन विफल</string>
+    <string name="scan_error">छवि लोड करने में त्रुटि</string>
+    <string name="scan_done">हो गया</string>
+
+    <!-- History Screen -->
+    <string name="history_title">स्कैन इतिहास</string>
+    <string name="history_empty_title">अभी तक कोई स्कैन नहीं</string>
+    <string name="history_empty_subtitle">आपका स्कैन इतिहास यहाँ दिखाई देगा</string>
+    <string name="history_start_scanning">स्कैनिंग शुरू करें</string>
+    <string name="history_delete">हटाएं</string>
+    <string name="history_delete_confirm">क्या आप वाकई इस स्कैन को हटाना चाहते हैं?</string>
+    <string name="history_cancel">रद्द करें</string>
+
+    <!-- Generate Screen -->
+    <string name="generate_title">कोड जनरेट करें</string>
+    <string name="generate_type">कोड प्रकार</string>
+    <string name="generate_input">सामग्री दर्ज करें</string>
+    <string name="generate_placeholder">टेक्स्ट, URL, या डेटा…</string>
+    <string name="generate_button">जनरेट</string>
+    <string name="generate_share">शेयर</string>
+    <string name="generate_save">गैलरी में सहेजें</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="settings_appearance">दिखावट</string>
+    <string name="settings_theme">थीम</string>
+    <string name="settings_theme_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="settings_theme_light">लाइट</string>
+    <string name="settings_theme_dark">डार्क</string>
+    <string name="settings_theme_amoled">AMOLED</string>
+    <string name="settings_dynamic_colors">डायनामिक कलर</string>
+    <string name="settings_scanner">स्कैनर</string>
+    <string name="settings_scan_sound">स्कैन साउंड</string>
+    <string name="settings_haptic_feedback">हैप्टिक फीडबैक</string>
+    <string name="settings_auto_focus">ऑटो फोकस</string>
+    <string name="settings_security">सुरक्षा</string>
+    <string name="settings_app_lock">ऐप लॉक</string>
+    <string name="settings_lock_type">लॉक प्रकार</string>
+    <string name="settings_lock_none">कोई नहीं</string>
+    <string name="settings_lock_pin">PIN</string>
+    <string name="settings_lock_password">पासवर्ड</string>
+    <string name="settings_lock_biometric">बायोमेट्रिक</string>
+    <string name="settings_language">भाषा</string>
+    <string name="settings_backup">बैकअप &amp; रिस्टोर</string>
+    <string name="settings_about">के बारे में</string>
+    <string name="settings_version">संस्करण</string>
+    <string name="settings_rate_app">ऐप रेट करें</string>
+    <string name="settings_share_app">ऐप शेयर करें</string>
+    <string name="settings_contact">सपोर्ट से संपर्क करें</string>
+    <string name="settings_privacy_policy">गोपनीयता नीति</string>
+    <string name="settings_terms">सेवा की शर्तें</string>
+    <string name="settings_licenses">ओपन सोर्स लाइसेंस</string>
+
+    <!-- Common -->
+    <string name="ok">ठीक है</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="save">सहेजें</string>
+    <string name="delete">हटाएं</string>
+    <string name="copied">क्लिपबोर्ड पर कॉपी किया</string>
+    <string name="error">त्रुटि</string>
+    <string name="loading">लोड हो रहा है…</string>
+    <string name="no_results">कोई परिणाम नहीं मिला</string>
+</resources>

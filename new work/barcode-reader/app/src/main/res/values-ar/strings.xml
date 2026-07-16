@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">ماسح الباركود</string>
+
+    <!-- Navigation -->
+    <string name="nav_scan">مسح</string>
+    <string name="nav_history">السجل</string>
+    <string name="nav_generate">إنشاء</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Scan Screen -->
+    <string name="scan_title">مسح الباركود</string>
+    <string name="scan_capture">التقاط للمسح</string>
+    <string name="scan_instructions">التقط صورة أو اختر من المعرض\nلمسح أكواد الباركود وQR</string>
+    <string name="scan_take_photo">التقاط صورة</string>
+    <string name="scan_load_gallery">تحميل من المعرض</string>
+    <string name="scan_processing">جاري مسح الباركود…</string>
+    <string name="scan_no_barcode">لم يتم العثور على باركود في الصورة</string>
+    <string name="scan_failed">فشل مسح الباركود</string>
+    <string name="scan_error">خطأ في تحميل الصورة</string>
+    <string name="scan_done">تم</string>
+
+    <!-- History Screen -->
+    <string name="history_title">سجل المسح</string>
+    <string name="history_empty_title">لا توجد مسح بعد</string>
+    <string name="history_empty_subtitle">سيظهر سجل مسحك هنا</string>
+    <string name="history_start_scanning">ابدأ المسح</string>
+    <string name="history_delete">حذف</string>
+    <string name="history_delete_confirm">هل أنت متأكد من حذف هذا المسح؟</string>
+    <string name="history_cancel">إلغاء</string>
+
+    <!-- Generate Screen -->
+    <string name="generate_title">إنشاء كود</string>
+    <string name="generate_type">نوع الكود</string>
+    <string name="generate_input">أدخل المحتوى</string>
+    <string name="generate_placeholder">نص، رابط، أو بيانات…</string>
+    <string name="generate_button">إنشاء</string>
+    <string name="generate_share">مشاركة</string>
+    <string name="generate_save">حفظ في المعرض</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_theme">السمة</string>
+    <string name="settings_theme_system">النظام الافتراضي</string>
+    <string name="settings_theme_light">فاتح</string>
+    <string name="settings_theme_dark">داكن</string>
+    <string name="settings_theme_amoled">AMOLED</string>
+    <string name="settings_dynamic_colors">ألوان ديناميكية</string>
+    <string name="settings_scanner">الماسح</string>
+    <string name="settings_scan_sound">صوت المسح</string>
+    <string name="settings_haptic_feedback">الاستجابة اللمسية</string>
+    <string name="settings_auto_focus">التركيز التلقائي</string>
+    <string name="settings_security">الأمان</string>
+    <string name="settings_app_lock">قفل التطبيق</string>
+    <string name="settings_lock_type">نوع القفل</string>
+    <string name="settings_lock_none">لا شيء</string>
+    <string name="settings_lock_pin">رقم سري</string>
+    <string name="settings_lock_password">كلمة مرور</string>
+    <string name="settings_lock_biometric">بيومتري</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_backup">النسخ الاحتياطي والاستعادة</string>
+    <string name="settings_about">حول</string>
+    <string name="settings_version">الإصدار</string>
+    <string name="settings_rate_app">تقييم التطبيق</string>
+    <string name="settings_share_app">مشاركة التطبيق</string>
+    <string name="settings_contact">التواصل مع الدعم</string>
+    <string name="settings_privacy_policy">سياسة الخصوصية</string>
+    <string name="settings_terms">شروط الخدمة</string>
+    <string name="settings_licenses">تراخيص مفتوحة المصدر</string>
+
+    <!-- Common -->
+    <string name="ok">موافق</string>
+    <string name="cancel">إلغاء</string>
+    <string name="save">حفظ</string>
+    <string name="delete">حذف</string>
+    <string name="copied">تم النسخ</string>
+    <string name="error">خطأ</string>
+    <string name="loading">جاري التحميل…</string>
+    <string name="no_results">لم يتم العثور على نتائج</string>
+</resources>

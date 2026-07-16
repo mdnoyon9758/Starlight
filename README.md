@@ -1,311 +1,73 @@
-# 🌟 Starlight - Enterprise FastAPI Framework
+# Barcode Reader - Android APK
 
-<div align="center">
+A modern barcode and QR code reader app for Android with iOS 26-inspired design.
 
-![Starlight Logo](https://img.shields.io/badge/Starlight-Enterprise%20FastAPI-blue?style=for-the-badge&logo=fastapi)
+## Features
 
-[![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green.svg)](https://fastapi.tiangolo.com)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/mdnoyon9758/Starlight/ci.yml?branch=main)](https://github.com/mdnoyon9758/Starlight/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/mdnoyon9758/Starlight)](https://codecov.io/gh/mdnoyon9758/Starlight)
-[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/r/mdnoyon9758/starlight)
+### Scanning
+- **Capture-to-Scan**: Take a photo or load from gallery to scan barcodes
+- **Multiple Formats**: QR Code, EAN-13, UPC-A, Code 128, Code 39, Data Matrix, PDF417, ITF
+- **Smart Results**: Each barcode type shows a beautiful, type-specific card:
+  - URLs → Clickable browser link
+  - Products → Product info with name, brand, nutriscore
+  - WiFi → Network card with password
+  - Phone → Call button
+  - Email → Compose email button
+  - Text → Decorated text card
 
-**A production-ready, enterprise-grade FastAPI framework with built-in authentication, background tasks, file storage, and comprehensive monitoring.**
+### Generation
+- **Dropdown Selector**: Choose from 8 barcode types
+- **Large Preview**: 300dp barcode display
+- **Share**: Share to social media, WhatsApp, etc.
+- **Save to Gallery**: Save generated barcodes directly to phone
 
-[🚀 Quick Start](#-quick-start) •
-[📖 Documentation](#-documentation) •
-[🔧 Features](#-features) •
-[💻 Development](#-development) •
-[🐳 Deployment](#-deployment)
+### History
+- **Scan History**: All scans saved automatically
+- **Export**: CSV and JSON export options
+- **Favorites**: Mark important scans
 
-</div>
+## Tech Stack
 
-## ✨ Overview
+- **Language**: Kotlin
+- **UI**: Jetpack Compose with Material 3
+- **Camera**: CameraX
+- **Scanning**: Google ML Kit
+- **Generation**: ZXing
+- **Min SDK**: 26 (Android 8.0)
+- **Target SDK**: 35
 
-Starlight is a comprehensive FastAPI framework designed for enterprise applications. It provides a solid foundation with all the essential components needed for modern web applications, including authentication, background processing, file management, and observability.
+## Project Structure
 
-## 🔧 Features
+```
+new work/barcode-reader/
+├── app/
+│   ├── build.gradle.kts
+│   └── src/main/
+│       ├── AndroidManifest.xml
+│       ├── java/com/barcodereader/
+│       │   ├── MainActivity.kt
+│       │   ├── data/           # History storage
+│       │   ├── service/        # Product lookup API
+│       │   ├── ui/             # Compose screens
+│       │   └── util/           # Utilities
+│       └── res/                # Resources
+├── build.gradle.kts
+└── settings.gradle.kts
+```
 
-### 🔐 **Authentication & Security**
-- **JWT Authentication** with refresh tokens
-- **OAuth2 Integration** (Google, GitHub)
-- **Account Linking** for multiple OAuth providers
-- **Role-based Access Control**
-- **Security Headers** middleware
-- **Rate Limiting** protection
-
-### ⚡ **Performance & Scalability**
-- **Async/Await** throughout the codebase
-- **Redis Caching** with advanced cache management
-- **Database Connection Pooling**
-- **Request/Response Compression**
-- **Performance Profiling** utilities
-- **Load Balancing** with NGINX
-
-### 🔄 **Background Processing**
-- **Celery Integration** for async tasks
-- **Flower Monitoring** dashboard
-- **Task Retry Logic** and error handling
-- **Scheduled Tasks** support
-- **Progress Tracking** for long-running tasks
-
-### 📁 **File Management**
-- **Local & Cloud Storage** (S3 compatible)
-- **Image Processing** with PIL
-- **File Validation** and size limits
-- **Secure Upload** handling
-- **CDN Integration** ready
-
-### 📊 **Monitoring & Observability**
-- **Prometheus Metrics** integration
-- **Grafana Dashboards** ready
-- **Structured Logging** with Structlog
-- **Error Tracking** with Sentry
-- **Health Checks** endpoints
-- **Request Tracing** with correlation IDs
-
-### 🏗️ **Architecture**
-- **Clean Architecture** principles
-- **Dependency Injection** pattern
-- **Modular Design** for easy extension
-- **Database Migrations** with Alembic
-- **Comprehensive Testing** suite
-- **Type Safety** with mypy
-
-## 🚀 Quick Start
-
-### 🎯 **Choose Your Setup Style**
-
-<table>
-<tr>
-<td width="50%">
-
-#### 🏃‍♂️ **Simple Setup** (5 mins)
-*Perfect for trying, learning, or prototyping*
+## Building
 
 ```bash
-# Clone and start immediately
-git clone https://github.com/mdnoyon9758/Starlight.git
-cd Starlight
-python start_simple.py
+cd new\ work/barcode-reader
+gradle assembleDebug
 ```
 
-**What you get:**
-- ✅ FastAPI + Authentication
-- ✅ SQLite database (no setup)
-- ✅ Auto-generated docs
-- ✅ Works without Docker/Redis
+APK output: `app/build/outputs/apk/debug/app-debug.apk`
 
-📖 **[Simple Setup Guide →](SIMPLE_SETUP.md)**
+## Latest Release
 
-</td>
-<td width="50%">
+Download the latest APK from [GitHub Releases](https://github.com/mdnoyon9758/Starlight/releases/tag/v3.1.2)
 
-#### 🏢 **Enterprise Setup** (15 mins)
-*Full production stack with all features*
+## License
 
-```bash
-# Full enterprise stack
-git clone https://github.com/mdnoyon9758/Starlight.git
-cd Starlight
-cp .env.example .env
-docker-compose up -d
-```
-
-**What you get:**
-- ✅ All simple features PLUS
-- ✅ Redis caching
-- ✅ Celery background tasks
-- ✅ Prometheus metrics
-- ✅ Grafana dashboards
-
-</td>
-</tr>
-</table>
-
-### 🎯 **Access Your Application**
-- 📖 **API Docs**: http://localhost:8000/api/v1/docs
-- ❤️ **Health Check**: http://localhost:8000/health
-- 🌺 **Flower Dashboard**: http://localhost:5555 *(enterprise only)*
-- 📊 **Metrics**: http://localhost:8090/metrics *(enterprise only)*
-
-## 📖 Documentation
-
-- **[Full Documentation](https://mdnoyon9758.github.io/Starlight)**
-- **[API Reference](https://mdnoyon9758.github.io/Starlight/api-reference/)**
-- **[Getting Started Guide](https://mdnoyon9758.github.io/Starlight/getting-started/)**
-- **[Deployment Guide](https://mdnoyon9758.github.io/Starlight/deployment/)**
-
-## 💻 Development
-
-### Setup Development Environment
-
-```bash
-# Install development dependencies
-pip install -e ".[dev,test]"
-
-# Install pre-commit hooks
-pre-commit install
-
-# Run tests
-pytest
-
-# Run with coverage
-pytest --cov=app --cov-report=html
-
-# Format code
-black app/
-isort app/
-
-# Type checking
-mypy app/
-
-# Linting
-ruff check app/
-```
-
-### Project Structure
-
-```
-starlight/
-├── app/                          # Application code
-│   ├── api/                      # API layer
-│   │   ├── middleware/           # Custom middleware
-│   │   └── v1/                   # API v1
-│   │       ├── dependencies/     # Route dependencies
-│   │       └── endpoints/        # API endpoints
-│   ├── core/                     # Core functionality
-│   │   ├── cache/                # Caching utilities
-│   │   ├── config/               # Configuration
-│   │   ├── errors/               # Error handling
-│   │   ├── logging/              # Logging setup
-│   │   ├── performance/          # Performance utilities
-│   │   └── security/             # Security utilities
-│   ├── infrastructure/           # Infrastructure layer
-│   │   ├── database/             # Database models
-│   │   ├── storage/              # File storage
-│   │   └── tasks/                # Background tasks
-│   └── schemas/                  # Pydantic schemas
-├── tests/                        # Test suite
-├── docs/                         # Documentation
-├── monitoring/                   # Monitoring setup
-└── deployment/                   # Deployment configs
-```
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run specific test categories
-pytest -m unit
-pytest -m integration
-pytest -m e2e
-
-# Run with specific coverage
-pytest --cov=app --cov-fail-under=85
-```
-
-## 🐳 Deployment
-
-### Docker Deployment
-
-```bash
-# Build and run with Docker Compose
-docker-compose up -d
-
-# Scale services
-docker-compose up -d --scale web=3
-
-# Production deployment
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### Environment Variables
-
-Key environment variables for deployment:
-
-```bash
-# Application
-ENVIRONMENT=production
-SECRET_KEY=your-super-secret-key
-DEBUG=false
-
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
-
-# Redis
-REDIS_URL=redis://host:6379/0
-
-# OAuth (optional)
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-# AWS S3 (optional)
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-S3_BUCKET_NAME=your-bucket-name
-```
-
-### Production Checklist
-
-- [ ] Set strong `SECRET_KEY`
-- [ ] Configure production database
-- [ ] Set up Redis for caching
-- [ ] Configure OAuth providers
-- [ ] Set up S3 for file storage
-- [ ] Configure monitoring (Prometheus/Grafana)
-- [ ] Set up error tracking (Sentry)
-- [ ] Configure HTTPS/SSL
-- [ ] Set up backup strategy
-- [ ] Configure log aggregation
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 style guidelines
-- Write comprehensive tests
-- Add docstrings to all public functions
-- Update documentation for new features
-- Ensure all CI checks pass
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [FastAPI](https://fastapi.tiangolo.com/) - The amazing web framework
-- [Celery](https://docs.celeryproject.org/) - Distributed task queue
-- [SQLAlchemy](https://www.sqlalchemy.org/) - Database toolkit
-- [Pydantic](https://pydantic-docs.helpmanual.io/) - Data validation
-- [Redis](https://redis.io/) - In-memory data structure store
-
-## 🔗 Links
-
-- **Documentation**: https://mdnoyon9758.github.io/Starlight
-- **Docker Hub**: https://hub.docker.com/r/mdnoyon9758/starlight
-- **Issue Tracker**: https://github.com/mdnoyon9758/Starlight/issues
-- **Discussions**: https://github.com/mdnoyon9758/Starlight/discussions
-
----
-
-<div align="center">
-
-**Made with ❤️ by the Starlight Team**
-
-[![GitHub stars](https://img.shields.io/github/stars/mdnoyon9758/Starlight?style=social)](https://github.com/mdnoyon9758/Starlight)
-[![GitHub forks](https://img.shields.io/github/forks/mdnoyon9758/Starlight?style=social)](https://github.com/mdnoyon9758/Starlight)
-
-</div>
+MIT License

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+// iOS 26 Light Theme
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
     onPrimary = Color.White,
@@ -29,38 +30,39 @@ private val LightColorScheme = lightColorScheme(
     error = Error,
     errorContainer = ErrorContainer,
     background = BackgroundLight,
-    onBackground = Color(0xFF1C1B1F),
-    surface = SurfaceLight,
-    onSurface = Color(0xFF1C1B1F),
-    surfaceVariant = SurfaceContainerLight,
-    onSurfaceVariant = Color(0xFF49454F),
-    outline = Color(0xFF79747E),
-    outlineVariant = Color(0xFFCAC4D0)
+    onBackground = Color(0xFF000000),
+    surface = SurfaceContainerLight,
+    onSurface = Color(0xFF000000),
+    surfaceVariant = Color(0xFFE5E5EA),
+    onSurfaceVariant = Color(0xFF3C3C43),
+    outline = Color(0xFFC6C6C8),
+    outlineVariant = Color(0xFFD1D1D6)
 )
 
+// iOS 26 Dark Theme
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFA5B4FC),
-    onPrimary = Color(0xFF1E1B4B),
-    primaryContainer = Color(0xFF3730A3),
-    onPrimaryContainer = Color(0xFFE0E7FF),
-    secondary = Color(0xFF5EEAD4),
-    onSecondary = Color(0xFF134E4A),
-    secondaryContainer = Color(0xFF115E59),
-    onSecondaryContainer = Color(0xFFCCFBF1),
-    tertiary = Color(0xFFFBBF24),
-    onTertiary = Color(0xFF451A03),
-    tertiaryContainer = Color(0xFF92400E),
-    onTertiaryContainer = Color(0xFFFEF3C7),
-    error = Color(0xFFFCA5A5),
-    errorContainer = Color(0xFF7F1D1D),
-    background = BackgroundDark,
-    onBackground = Color(0xFFE6E1E5),
-    surface = SurfaceDark,
-    onSurface = Color(0xFFE6E1E5),
-    surfaceVariant = SurfaceContainerDark,
-    onSurfaceVariant = Color(0xFFCAC4D0),
-    outline = Color(0xFF938F99),
-    outlineVariant = Color(0xFF49454F)
+    primary = Color(0xFF0A84FF),           // iOS Blue Dark
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF0040DD),
+    onPrimaryContainer = Color(0xFFD6E3FF),
+    secondary = Color(0xFF5E5CE6),         // iOS Purple Dark
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFF3634A3),
+    onSecondaryContainer = Color(0xFFD9D7FF),
+    tertiary = Color(0xFFFF9F0A),          // iOS Orange Dark
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFF7C5800),
+    onTertiaryContainer = Color(0xFFFFDDB3),
+    error = Color(0xFFFF453A),             // iOS Red Dark
+    errorContainer = Color(0xFF890001),
+    background = Color(0xFF000000),         // True Black
+    onBackground = Color(0xFFFFFFFF),
+    surface = Color(0xFF1C1C1E),           // iOS Dark Gray
+    onSurface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFF2C2C2E),
+    onSurfaceVariant = Color(0xFFE5E5EA),
+    outline = Color(0xFF48484A),
+    outlineVariant = Color(0xFF3A3A3C)
 )
 
 @Composable
@@ -76,6 +78,10 @@ fun BarcodeReaderTheme(
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            
+            // iOS-style navigation bar
+            window.navigationBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !darkTheme
         }
     }
 

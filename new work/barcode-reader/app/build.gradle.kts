@@ -12,8 +12,8 @@ android {
         applicationId = "com.barcodereader"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "3.0"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
@@ -73,5 +73,6 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.1.0")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.google.zxing:core:3.5.3")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

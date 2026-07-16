@@ -90,8 +90,8 @@ fun AppNavigation(historyStorage: HistoryStorage) {
             ) {
                 composable(TabItem.Scan.route) {
                     ScanScreen(
-                        onGalleryClick = { /* Gallery handled in ScanScreen */ },
-                        onPermissionRequest = { /* Permission handled in ScanScreen */ }
+                        onGalleryClick = { /* Handled internally */ },
+                        onPermissionRequest = { /* Handled internally */ }
                     )
                 }
                 

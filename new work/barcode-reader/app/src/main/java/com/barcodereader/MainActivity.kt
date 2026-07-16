@@ -36,8 +36,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,13 +49,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.barcodereader.service.ProductInfo
+import com.barcodereader.service.ProductLookupService
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
     private val scanResultState = mutableStateOf("Tap the button below to start scanning a barcode or QR code.")
     private val cameraVisibleState = mutableStateOf(false)
+    private val productInfoState = mutableStateOf<ProductInfo?>(null)
+    private val isLoadingProduct = mutableStateOf(false)
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -79,10 +87,19 @@ class MainActivity : ComponentActivity() {
             BarcodeReaderApp(
                 scanResult = scanResultState.value,
                 cameraVisible = cameraVisibleState.value,
+                productInfo = productInfoState.value,
+                isLoadingProduct = isLoadingProduct.value,
                 onScanClick = { requestCameraPermission() },
                 onGalleryClick = { openGallery() },
-                onReset = { cameraVisibleState.value = false; scanResultState.value = "Ready for another scan." },
-                onBarcodeDetected = { result -> scanResultState.value = result }
+                onReset = { 
+                    cameraVisibleState.value = false
+                    scanResultState.value = "Ready for another scan."
+                    productInfoState.value = null
+                },
+                onBarcodeDetected = { result -> 
+                    scanResultState.value = result
+                    lookupProduct(result)
+                }
             )
         }
     }
@@ -112,7 +129,7 @@ class MainActivity : ComponentActivity() {
                     val result = barcodes.firstOrNull()?.rawValue ?: "No barcode found in the selected image."
                     scanResultState.value = result
                     cameraVisibleState.value = false
-                    Toast.makeText(this, result, Toast.LENGTH_LONG).show()
+                    lookupProduct(result)
                 }
                 .addOnFailureListener {
                     scanResultState.value = "Unable to read a barcode from the selected image."
@@ -123,12 +140,34 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, "Unable to open selected image", Toast.LENGTH_LONG).show()
         }
     }
+
+    private fun lookupProduct(barcode: String) {
+        val productLookupService = ProductLookupService(this)
+        
+        if (productLookupService.isProductBarcode(barcode)) {
+            isLoadingProduct.value = true
+            productInfoState.value = null
+            
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
+                try {
+                    val productInfo = productLookupService.lookupProduct(barcode)
+                    productInfoState.value = productInfo
+                    isLoadingProduct.value = false
+                } catch (e: Exception) {
+                    isLoadingProduct.value = false
+                    Toast.makeText(this@MainActivity, "Failed to lookup product", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun BarcodeReaderApp(
     scanResult: String,
     cameraVisible: Boolean,
+    productInfo: ProductInfo?,
+    isLoadingProduct: Boolean,
     onScanClick: () -> Unit,
     onGalleryClick: () -> Unit,
     onReset: () -> Unit,
@@ -198,6 +237,7 @@ fun BarcodeReaderApp(
                 }
             }
 
+            // Scan result card
             Card(
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -206,6 +246,45 @@ fun BarcodeReaderApp(
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Latest result", style = MaterialTheme.typography.titleMedium)
                     Text(scanResult, style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+
+            // Product info card (if available)
+            if (isLoadingProduct) {
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, colorScheme.outlineVariant)
+                ) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Loading product info...", style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            } else if (productInfo != null) {
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, colorScheme.outlineVariant)
+                ) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Product Information", style = MaterialTheme.typography.titleMedium)
+                        
+                        productInfo.name?.let {
+                            Text("Name: $it", style = MaterialTheme.typography.bodyMedium)
+                        }
+                        
+                        productInfo.brand?.let {
+                            Text("Brand: $it", style = MaterialTheme.typography.bodyMedium)
+                        }
+                        
+                        productInfo.categories?.let {
+                            Text("Categories: $it", style = MaterialTheme.typography.bodySmall)
+                        }
+                        
+                        productInfo.nutriscore?.let {
+                            Text("Nutriscore: $it.uppercase()", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
                 }
             }
         }

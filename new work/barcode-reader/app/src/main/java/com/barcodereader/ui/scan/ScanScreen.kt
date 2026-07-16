@@ -16,10 +16,10 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,7 +43,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +59,6 @@ import com.barcodereader.data.HistoryStorage
 import com.barcodereader.data.ScanHistory
 import com.barcodereader.service.ProductInfo
 import com.barcodereader.service.ProductLookupService
-import com.barcodereader.ui.components.EmptyState
 import com.barcodereader.ui.components.ScanResultDisplay
 import com.barcodereader.ui.theme.Primary
 import com.barcodereader.util.FormatUtils
@@ -92,7 +90,6 @@ fun ScanScreen(
     val context = LocalContext.current
     val storage = remember { HistoryStorage(context) }
     val productLookupService = remember { ProductLookupService(context) }
-    val scope = rememberCoroutineScope()
 
     var hasPermission by remember {
         mutableStateOf(
@@ -106,7 +103,6 @@ fun ScanScreen(
     var productInfo by remember { mutableStateOf<ProductInfo?>(null) }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Camera capture launcher
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
@@ -125,7 +121,6 @@ fun ScanScreen(
         }
     }
 
-    // Gallery picker launcher
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -144,7 +139,6 @@ fun ScanScreen(
         }
     }
 
-    // Camera permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -158,23 +152,11 @@ fun ScanScreen(
         }
     }
 
-    fun vibrate() {
-        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
-        vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
-    }
-
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header
             Box(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 contentAlignment = Alignment.Center
@@ -186,13 +168,11 @@ fun ScanScreen(
                 )
             }
 
-            // Main content area
             Box(
                 modifier = Modifier.fillMaxSize().weight(1f),
                 contentAlignment = Alignment.Center
             ) {
                 if (isProcessing) {
-                    // Loading state
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -209,13 +189,11 @@ fun ScanScreen(
                         )
                     }
                 } else if (!showResult) {
-                    // Ready to scan state
                     Column(
                         modifier = Modifier.padding(32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
-                        // Camera icon
                         Box(
                             modifier = Modifier
                                 .size(120.dp)
@@ -248,12 +226,10 @@ fun ScanScreen(
                             )
                         }
 
-                        // Action buttons
                         Column(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            // Take Photo button
                             Button(
                                 onClick = {
                                     if (hasPermission) {
@@ -279,7 +255,6 @@ fun ScanScreen(
                                 Text("Take Photo", style = MaterialTheme.typography.titleMedium)
                             }
 
-                            // Gallery button
                             OutlinedButton(
                                 onClick = { galleryLauncher.launch("image/*") },
                                 modifier = Modifier
@@ -301,21 +276,21 @@ fun ScanScreen(
             }
         }
 
-        // Result bottom sheet
+        // Result bottom sheet - NO clickable on backdrop to prevent accidental dismiss
         AnimatedVisibility(
             visible = showResult && lastResult != null,
             enter = slideInVertically(initialOffsetY = { it }),
             exit = slideOutVertically(targetOffsetY = { it })
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f))
-                    .clickable {
-                        showResult = false
-                        lastResult = null
-                    }
-            ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Semi-transparent backdrop - no clickable
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f))
+                )
+
+                // Result sheet
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -324,7 +299,6 @@ fun ScanScreen(
                         .background(MaterialTheme.colorScheme.surface)
                         .padding(top = 8.dp)
                 ) {
-                    // Drag handle
                     Box(
                         modifier = Modifier
                             .width(40.dp)
@@ -336,7 +310,6 @@ fun ScanScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Result display
                     ScanResultDisplay(
                         result = lastResult!!,
                         type = lastResultType ?: "TEXT",
@@ -348,23 +321,26 @@ fun ScanScreen(
                             FormatUtils.shareText(context, lastResult!!)
                         },
                         onDismiss = {
+                            // Just dismiss the sheet, don't clear result yet
                             showResult = false
-                            lastResult = null
                         }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Done button
-                    OutlinedButton(
+                    // Done button - clear everything and reset
+                    Button(
                         onClick = {
                             showResult = false
                             lastResult = null
+                            lastResultType = null
+                            productInfo = null
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                             .height(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text("Done", style = MaterialTheme.typography.titleMedium)

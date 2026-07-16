@@ -15,8 +15,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -276,21 +274,15 @@ fun ScanScreen(
             }
         }
 
-        // Result bottom sheet - NO clickable on backdrop to prevent accidental dismiss
-        AnimatedVisibility(
-            visible = showResult && lastResult != null,
-            enter = slideInVertically(initialOffsetY = { it }),
-            exit = slideOutVertically(targetOffsetY = { it })
-        ) {
+        // Result bottom sheet
+        if (showResult) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // Semi-transparent backdrop - no clickable
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(alpha = 0.5f))
                 )
 
-                // Result sheet
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -310,28 +302,33 @@ fun ScanScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    ScanResultDisplay(
-                        result = lastResult!!,
-                        type = lastResultType ?: "TEXT",
-                        productInfo = productInfo,
-                        onCopy = {
-                            FormatUtils.copyToClipboard(context, lastResult!!)
-                        },
-                        onShare = {
-                            FormatUtils.shareText(context, lastResult!!)
-                        },
-                        onDismiss = {
-                            // Just dismiss the sheet, don't clear result yet
-                            showResult = false
-                        }
-                    )
+                    // Only show result if we have one
+                    val currentResult = lastResult
+                    val currentType = lastResultType
+                    if (currentResult != null) {
+                        ScanResultDisplay(
+                            result = currentResult,
+                            type = currentType ?: "TEXT",
+                            productInfo = productInfo,
+                            onCopy = {
+                                FormatUtils.copyToClipboard(context, currentResult)
+                            },
+                            onShare = {
+                                FormatUtils.shareText(context, currentResult)
+                            },
+                            onDismiss = {
+                                showResult = false
+                            }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Done button - clear everything and reset
                     Button(
                         onClick = {
+                            // First hide the sheet
                             showResult = false
+                            // Then clear the data after a short delay
                             lastResult = null
                             lastResultType = null
                             productInfo = null
